@@ -1,0 +1,14 @@
+{
+  "discoverDescriptionExtras": "Api used to manage a pet store with access to pets, pet types, users, orders and store",
+  "mcpServers": {
+    "mcp-petstore": {
+        "command": "uvx",
+        "args": ["mcp-openapi-proxy"],
+        "env": {
+            "OPENAPI_SPEC_URL": "https://petstore.swagger.io/v2/swagger.json",
+            "API_KEY": "xxxxx"
+       }
+    }
+  }
+}
+
