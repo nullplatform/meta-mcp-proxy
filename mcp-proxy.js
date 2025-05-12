@@ -30,7 +30,7 @@ export class MCPProxy {
                 fuzzy: 0.2 // Allow some fuzzy matching
             }
         }); // Will hold our search index
-        this.discoverDescription = discoverDescription;
+        this.discoverDescription = discoverDescription || DISCOVER_DESCRIPTION;
         this.discoverDescriptionExtras = discoverDescriptionExtras;
         this.discoverLimit = discoverLimit || DEFAULT_DISCOVER_LIMIT;
         this.mcpIndex = {};
@@ -162,9 +162,7 @@ export class MCPProxy {
      * @param {Object} params.args - Arguments to pass to the tool
      * @returns {Object} - The result from the tool execution
      */
-    async execute({ toolId, method, args }) {
-        console.error({ toolId, method, args });
-
+    async execute({ toolId, method, args },contextFn = null) {
         // Handle JavaScript functions
         if (toolId === 'js') {
             if (!this.jsFunctions[method]) {
@@ -172,7 +170,11 @@ export class MCPProxy {
             }
 
             try {
-                const result = await this.jsFunctions[method].fn(args);
+                let context = null;
+                if(contextFn) {
+                    context = await contextFn();
+                }
+                const result = await this.jsFunctions[method].fn(args, context);
                 return result;
             } catch (error) {
                 console.error(`Error executing JavaScript function '${method}':`, error);
