@@ -18,16 +18,18 @@ const DISCOVER_DESCRIPTION = "Discover enables you the possibility to find other
 const DEFAULT_DISCOVER_LIMIT=5;
 
 export class MCPProxy {
-    constructor({ mcpServers, discoverDescription = null, discoverDescriptionExtras = null, discoverLimit = null }) {
+    constructor({ mcpServers, fuzzy= 0.1, descriptionBoost=2, discoverDescription = null, discoverDescriptionExtras = null, discoverLimit = null }) {
         this.mcpServers = mcpServers;
         this.clients = {};
         this.allTools = {}; // Store all tools from all servers
+        this.fuzzy = fuzzy;
+        this.descriptionBoost = descriptionBoost;
         this.toolsIndex = new MiniSearch({
             fields: ['method', 'description', 'parameterDescriptions'], // Fields to index
             storeFields: ['toolId','method', 'description', 'parameterDescriptions'], // Fields to return with search results
             searchOptions: {
-                boost: { description: 2 }, // Boost matches in description
-                fuzzy: 0.2 // Allow some fuzzy matching
+                boost: { description: descriptionBoost }, // Boost matches in description
+                fuzzy // Allow some fuzzy matching
             }
         }); // Will hold our search index
         this.discoverDescription = discoverDescription || DISCOVER_DESCRIPTION;
@@ -90,9 +92,9 @@ export class MCPProxy {
 
         // Search the index with the combined query
         const searchResults = this.toolsIndex.search(combinedQuery, {
-            fuzzy: 0.1, // Allow some typos and fuzzy matching
+            fuzzy:this.fuzzy, // Allow some typos and fuzzy matching
             prefix: true, // Match by prefix
-            boost: { description: 2 }, // Boost matches in description
+            boost: { description: this.descriptionBoost }, // Boost matches in description
             combineWith: 'OR', // Match any of the terms
         });
         const filteredResults = searchResults
