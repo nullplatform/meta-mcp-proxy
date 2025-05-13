@@ -105,6 +105,7 @@ export class MCPProxy {
                 return {
                     toolId: serverName,
                     method: toolName,
+                    description: result.description,
                     inputSchema: this.jsFunctions[toolName].inputSchema,
                 };
             } else {
@@ -112,6 +113,7 @@ export class MCPProxy {
                 return {
                     toolId: serverName,
                     method: toolName,
+                    description: result.description,
                     inputSchema: this.mcpIndex[serverName].tools[toolName].inputSchema,
                 };
             }
